@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Đăng Phòng Cho Thuê | Admin KA Homes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .card { border-radius: 20px; border: none; }
+        .btn-primary { background: #2563eb; border: none; border-radius: 10px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="font-weight-bold text-primary">Đăng Phòng Cho Thuê Mới</h2>
+            <div>
+                <a href="listings.html" class="btn btn-outline-secondary mr-2" target="_blank">Xem Phòng Đã Đăng</a>
+                <button id="btnLogout" class="btn btn-danger">Đăng Xuất</button>
+            </div>
+        </div>
+        
+        <div class="card p-4 shadow-sm">
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label class="font-weight-bold">Tên phòng / Loại phòng</label>
+                    <input type="text" id="postTitle" class="form-control" placeholder="VD: Studio Gác Xép Hiện Đại" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label class="font-weight-bold">Giá thuê</label>
+                    <input type="text" id="postPrice" class="form-control" placeholder="VD: 4.800.000đ - 5.600.000đ" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label class="font-weight-bold">Khu vực (Quận)</label>
+                    <select id="postDistrict" class="form-control">
+                        <option value="Đống Đa">Đống Đa</option>
+                        <option value="Thanh Xuân">Thanh Xuân</option>
+                        <option value="Cầu Giấy">Cầu Giấy</option>
+                        <option value="Hai Bà Trưng">Hai Bà Trưng</option>
+                    </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label class="font-weight-bold">Tình trạng phòng (Màu badge)</label>
+                    <input type="text" id="postStatus" class="form-control" placeholder="VD: Trống 5 phòng / Giảm giá..." required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label class="font-weight-bold">Địa chỉ chi tiết</label>
+                    <input type="text" id="postAddress" class="form-control" placeholder="VD: Ngõ 51 Thái Thịnh" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label class="font-weight-bold">Tiện ích nổi bật (Cách nhau bằng dấu phẩy)</label>
+                    <input type="text" id="postAmenities" class="form-control" placeholder="VD: Full đồ, Máy giặt riêng, Thang máy" required>
+                </div>
+                <div class="col-md-12 form-group mt-2">
+                    <label class="font-weight-bold text-primary">Tải ảnh căn phòng từ máy tính/điện thoại</label>
+                    <input type="file" id="postImageFile" class="form-control-file" accept="image/*" required>
+                </div>
+            </div>
+            <button id="btnSubmit" class="btn btn-primary py-3 mt-4 w-100">Tải Ảnh & Xuất Bản Lên Web</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXBwpbg-eCmwwrNAmJ_4JE5BMB2pbkh3Q",
+            authDomain: "kahomes.firebaseapp.com",
+            projectId: "kahomes",
+            storageBucket: "kahomes.firebasestorage.app",
+            messagingSenderId: "504157160650",
+            appId: "1:504157160650:web:666b727ba03c0d6888e033",
+            measurementId: "G-5YK38ZF6P7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) { window.location.href = "auth.html"; }
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            signOut(auth).then(() => { window.location.href = "auth.html"; });
+        });
+
+        document.getElementById('btnSubmit').addEventListener('click', async () => {
+            const title = document.getElementById('postTitle').value;
+            const price = document.getElementById('postPrice').value;
+            const district = document.getElementById('postDistrict').value;
+            const status = document.getElementById('postStatus').value;
+            const address = document.getElementById('postAddress').value;
+            const amenities = document.getElementById('postAmenities').value;
+            const imageFile = document.getElementById('postImageFile').files[0];
+
+            if(!title || !price || !address || !imageFile) { 
+                alert("Vui lòng điền đủ thông tin và chọn ảnh!"); return; 
+            }
+
+            const btn = document.getElementById('btnSubmit');
+            btn.innerText = "Đang tải ảnh lên và lưu dữ liệu (Vui lòng chờ)...";
+            btn.disabled = true;
+
+            try {
+                // Tải ảnh lên Firebase Storage
+                const storageRef = ref(storage, 'rooms/' + Date.now() + '_' + imageFile.name);
+                await uploadBytes(storageRef, imageFile);
+                const imageUrl = await getDownloadURL(storageRef);
+
+                // Lưu dữ liệu vào Database
+                await addDoc(collection(db, "rooms"), {
+                    title: title,
+                    price: price,
+                    district: district,
+                    status: status,
+                    address: address,
+                    amenities: amenities,
+                    imageUrl: imageUrl,
+                    createdAt: serverTimestamp()
+                });
+
+                alert("Đăng phòng thành công! Hãy vào trang Thuê Phòng để kiểm tra.");
+                window.location.reload(); 
+            } catch (e) {
+                console.error("Lỗi: ", e);
+                alert("Có lỗi xảy ra: " + e.message);
+                btn.innerText = "Tải Ảnh & Xuất Bản Lên Web";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

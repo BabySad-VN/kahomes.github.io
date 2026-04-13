@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thuê Phòng | KA Homes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root { --primary: #2563eb; --primary-dark: #1d4ed8; --secondary: #f59e0b; --dark: #0f172a; --light: #f8fafc; --muted: #64748b; --radius-lg: 24px; --radius-md: 16px; --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--light); color: #334155; }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .navbar { background: #fff !important; box-shadow: var(--shadow-sm); padding: 12px 0; border-bottom: 1px solid #f1f5f9; z-index: 1000;}
+        .navbar-brand { font-weight: 800; font-size: 28px; color: var(--primary) !important; display: flex; align-items: center; gap: 8px; }
+        .nav-link { font-weight: 600; color: var(--dark) !important; margin: 0 15px; position: relative; transition: 0.3s; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 3px; bottom: -5px; left: 50%; background: var(--primary); transition: 0.3s ease; transform: translateX(-50%); border-radius: 2px; }
+        .nav-link:hover::after, .nav-item.active .nav-link::after { width: 100%; }
+        .btn-gradient { background: linear-gradient(135deg, var(--primary), #3b82f6); color: white !important; border-radius: 12px; padding: 10px 24px; font-weight: 700; transition: 0.3s; border: none; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
+
+        .sidebar-filter { background: #fff; border-radius: var(--radius-md); padding: 25px; box-shadow: var(--shadow-sm); border: 1px solid #f1f5f9; position: sticky; top: 100px; }
+        .filter-title { font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .custom-control-label { cursor: pointer; color: #475569; font-weight: 600; }
+        .custom-checkbox .custom-control-input:checked~.custom-control-label::before { background-color: var(--primary); border-color: var(--primary); border-radius: 4px; }
+
+        .property-card { background: #fff; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); transition: 0.4s ease; border: 1px solid #f1f5f9; position: relative; margin-bottom: 30px; }
+        .property-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: rgba(37,99,235,0.2); }
+        .property-img-wrap { position: relative; height: 240px; overflow: hidden; }
+        .property-img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: 0.7s; }
+        .property-card:hover .property-img { transform: scale(1.1); }
+        .badge-location { position: absolute; top: 16px; left: 16px; background: rgba(255,255,255,0.95); color: var(--dark); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .badge-status { position: absolute; top: 16px; right: 16px; background: #2563eb; color: #fff; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; z-index: 2; }
+        
+        .price { color: var(--primary); font-size: 1.4rem; font-weight: 800; display: flex; align-items: baseline; gap: 4px; }
+        .price span { font-size: 0.9rem; font-weight: 500; color: var(--muted); }
+        .amenities { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 16px; margin-top: 16px; border-top: 1px dashed #e2e8f0; }
+        .amenity-item { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 700; color: var(--muted); background: #f8fafc; padding: 5px 10px; border-radius: 6px;}
+
+        .floating-group { position: fixed; bottom: 30px; right: 30px; z-index: 999; display: flex; flex-direction: column; gap: 15px; }
+        .float-btn { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: 0.3s; text-decoration: none; }
+        .float-btn.zalo { background: #0068ff; } .float-btn.call { background: #10b981; }
+        .float-btn:hover { transform: scale(1.1); color: white; }
+
+        .footer { background: var(--dark); color: #94a3b8; padding: 60px 0 20px; margin-top: 60px; }
+        .footer-title { color: #fff; font-weight: 700; margin-bottom: 24px; font-size: 1.2rem; }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #94a3b8; text-decoration: none; transition: transform 0.3s ease, color 0.3s ease; display: inline-block; }
+        .footer-links a:hover { color: var(--primary); transform: translateX(8px); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="fa-solid fa-building-user"></i> KA Homes</a>
+            <button class="navbar-toggler border-0 text-dark" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <i class="fa-solid fa-bars" style="font-size: 24px;"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="listings.html">Thuê Phòng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">Về chúng tôi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="reviews.html">Đánh giá</a></li>
+                    <li class="nav-item"><a class="nav-link" href="blog.html">Tin tức</a></li>
+                    
+                    <li class="nav-item ml-lg-3 mt-3 mt-lg-0 mb-2 mb-lg-0">
+                        <a class="btn btn-outline-primary" href="auth.html" style="border-radius: 12px; font-weight: 700; background: white;">
+                            <i class="fa-solid fa-user-shield mr-1"></i> Admin
+                        </a>
+                    </li>
+                    <li class="nav-item ml-lg-2 mt-3 mt-lg-0">
+                        <a class="btn btn-gradient" href="tel:0942841758"><i class="fa-solid fa-phone mr-2"></i>0942 841 758</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <div class="sidebar-filter" data-aos="fade-right">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="font-weight-bold m-0" style="color: var(--dark);"><i class="fa-solid fa-filter mr-2"></i>Bộ Lọc</h4>
+                    </div>
+                    <button class="btn btn-gradient w-100 py-3">Áp Dụng Tìm Kiếm</button>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <h5 class="font-weight-bold m-0 mb-3 mb-md-0">Danh sách <span class="text-primary">phòng cho thuê</span></h5>
+                </div>
+                
+                <div class="row" id="property-container">
+                    <div class="col-12 text-center text-muted py-5" id="loadingMsg">
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2x mb-3 text-primary"></i>
+                        <p>Đang tải danh sách phòng mới nhất...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0 small">© 2026 KA Homes. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXBwpbg-eCmwwrNAmJ_4JE5BMB2pbkh3Q",
+            authDomain: "kahomes.firebaseapp.com",
+            projectId: "kahomes",
+            storageBucket: "kahomes.firebasestorage.app",
+            messagingSenderId: "504157160650",
+            appId: "1:504157160650:web:666b727ba03c0d6888e033",
+            measurementId: "G-5YK38ZF6P7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadRooms() {
+            const container = document.getElementById('property-container');
+            
+            try {
+                const q = query(collection(db, "rooms"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                container.innerHTML = ""; // Xóa dòng chữ Loading
+                
+                if (querySnapshot.empty) {
+                    container.innerHTML = "<div class='col-12 text-center text-muted py-5'>Chưa có phòng nào được đăng. Hãy vào Admin để đăng!</div>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const room = doc.data();
+                    
+                    // Tách tiện ích thành các tag nhỏ
+                    const amenitiesList = room.amenities.split(',').map(item => 
+                        `<div class="amenity-item"><i class="fa-solid fa-check text-primary"></i> ${item.trim()}</div>`
+                    ).join('');
+
+                    const html = `
+                        <div class="col-md-6 item-col mb-4">
+                            <div class="property-card h-100">
+                                <div class="property-img-wrap">
+                                    <span class="badge-location"><i class="fa-solid fa-location-dot text-primary mr-1"></i>${room.district}</span>
+                                    <span class="badge-status">${room.status}</span>
+                                    <img src="${room.imageUrl}" class="property-img" alt="${room.title}">
+                                </div>
+                                <div class="card-body p-4 mt-2">
+                                    <h5 class="font-weight-bold text-truncate mb-2">${room.title}</h5>
+                                    <p class="text-muted small mb-3"><i class="fa-solid fa-map-pin mr-2"></i>${room.address}</p>
+                                    <div class="price mb-2">${room.price}</div>
+                                    <div class="amenities">
+                                        ${amenitiesList}
+                                    </div>
+                                    <a href="tel:0942841758" class="btn btn-outline-primary w-100 mt-4" style="border-radius: 10px; font-weight: 600;"><i class="fa-solid fa-phone mr-2"></i>Gọi Ngay</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', html);
+                });
+            } catch (error) {
+                console.error("Lỗi:", error);
+                container.innerHTML = "<div class='col-12 text-center text-danger py-5'>Lỗi tải dữ liệu. Hãy kiểm tra lại kết nối Firebase.</div>";
+            }
+        }
+        loadRooms();
+    </script>
+</body>
+</html>
